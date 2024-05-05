@@ -54,8 +54,7 @@ def jax_binom_coeff(n, k):
     return coeff
 
 def sYlm(s, l, m):
-    """Returns spin-weighted (l, m) spherical harmonic with spin weight s, as a function of cosi, 
-    to be used in aligned-spin models.
+    """Returns spin-weighted (l, m) spherical harmonic with spin weight s, as a function of cosi.
      
     Arguments
     ---------
@@ -74,7 +73,7 @@ def sYlm(s, l, m):
     
     def _get_rs(r):
         shape = len(r)
-        leng = jnp.max(r) + 1
+        leng = max(r) + 1
         coll = jnp.broadcast_to(jnp.arange(leng), (shape, leng)).swapaxes(0,1)
 
         return coll
@@ -89,16 +88,16 @@ def sYlm(s, l, m):
     
     def cot_th_2(cosi):
         return cos_th_2(cosi)/sin_th_2(cosi)
-
-    ## normalization constant is \sqrt{1/0.159)} ##
     
-    return lambda cosi: ((-1)**(l+m-s) * jnp.sqrt(fac(l+m)*
+    swsh = lambda cosi: ((-1)**(l+m-s) * jnp.sqrt(fac(l+m)*
                                                   fac(l-m)*
                                                   ((2*l)+1)/
                                                   (4*jnp.pi)/
                                                   fac(l+s)/
                                                   fac(l-s)) * (sin_th_2(cosi))**(2*l) * jnp.sum(jnp.array([(-1)**n * jax_binom_coeff(l-s, n) * jax_binom_coeff(l+s, n+s-m) * (cot_th_2(cosi))**((2*n)+s-m) 
-                                                                                                           for n in rs]), axis=0)* jnp.sqrt(1/0.159))
+                                                                                                                            for n in rs]), axis=0))
+    
+    return lambda cosi: swsh(cosi) * np.sqrt(1/0.1587577) # normalization constant
 
 def calc_Yp(cosi, swsh):
     """Returns (+) angular factor for aligned model"""
