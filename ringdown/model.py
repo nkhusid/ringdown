@@ -480,8 +480,8 @@ def make_model(modes : int | list[(int, int, int, int)],
                 unc_dms = rd_design_matrix(times, f, g, fps, fcs, a_scale)
                 Yp_mat = jnp.reshape(calc_Yp(cosi, swsh), (1, n_modes, 1))
                 Yc_mat = jnp.reshape(calc_Yc(cosi, swsh), (1, n_modes, 1))
-                design_matrices = jnp.concatenate(((Yp_mat * unc_dms[:,:n_modes,:]) + (Yc_mat * unc_dms[:,2*n_modes:3*n_modes,:]), 
-                                              (Yp_mat * unc_dms[:,n_modes:2*n_modes,:]) + (Yc_mat * unc_dms[:,3*n_modes:,:])), axis=1)
+                design_matrices = jnp.concatenate(((Yp_mat * unc_dms[:,:n_modes,:]) + (Yc_mat * unc_dms[:,3*n_modes:,:]), 
+                                                   (Yp_mat * unc_dms[:,n_modes:2*n_modes,:]) - (Yc_mat * unc_dms[:,2*n_modes:3*n_modes,:])), axis=1)
                 # 2 quadratures in the aligned model #
                 mu = jnp.zeros(2*n_modes)
                 lambda_inv = jnp.eye(2*n_modes)
